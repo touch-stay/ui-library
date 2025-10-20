@@ -1,0 +1,3 @@
+@import '@/theme/index.css';
+
+@source './dev/**/*.{vue}';
