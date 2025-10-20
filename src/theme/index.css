@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
+@import 'tailwindcss';
+
+/* Touch Stay UI theme partials */
+@import './palette.css';
+@import './typography.css';
+@import './layout.css';
+@import './effects.css';
+@import './motion.css';
+
+@utility clip-triangle {
+  clip-path: polygon(100% 0, 100% 100%, 40% 100%);
+}
+
+@utility clip-polygon {
+  clip-path: polygon(110% 20%, 110% 110%, -100% 100%);
+}
+
+/* Iconify plugin */
+@plugin '@iconify/tailwind4' {
+  prefix: 'iconify';
+}
+
+/*html, body {*/
+/*  font-family: var(--font-sans), serif;*/
+/*}*/
