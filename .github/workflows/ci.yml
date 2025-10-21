@@ -5,26 +5,36 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   install-deps:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          run_install: false
 
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
           node-version: 24.x
 
+      - name: Resolve pnpm store path
+        id: pnpm-store
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
       - name: Restore pnpm store cache
         id: cache-restore
         uses: actions/cache/restore@v4
         with:
-          path: |
-            ~/.pnpm-store
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
           key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             pnpm-${{ runner.os }}-
@@ -36,8 +46,7 @@ jobs:
         if: steps.cache-restore.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: |
-            ~/.pnpm-store
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
           key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
   format:
@@ -54,11 +63,14 @@ jobs:
         with:
           node-version: 24.x
 
+      - name: Resolve pnpm store path
+        id: pnpm-store
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
       - name: Restore pnpm store cache
         uses: actions/cache/restore@v4
         with:
-          path: |
-            ~/.pnpm-store
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
           key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             pnpm-${{ runner.os }}-
@@ -83,11 +95,14 @@ jobs:
         with:
           node-version: 24.x
 
+      - name: Resolve pnpm store path
+        id: pnpm-store
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
       - name: Restore pnpm store cache
         uses: actions/cache/restore@v4
         with:
-          path: |
-            ~/.pnpm-store
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
           key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             pnpm-${{ runner.os }}-
@@ -96,7 +111,7 @@ jobs:
         run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Lint
-        run: pnpm lint
+        run: pnpm lint:ci
 
   type-check:
     runs-on: ubuntu-latest
@@ -112,11 +127,14 @@ jobs:
         with:
           node-version: 24.x
 
+      - name: Resolve pnpm store path
+        id: pnpm-store
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
       - name: Restore pnpm store cache
         uses: actions/cache/restore@v4
         with:
-          path: |
-            ~/.pnpm-store
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
           key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             pnpm-${{ runner.os }}-
