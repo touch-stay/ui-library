@@ -9,8 +9,7 @@ jobs:
   install-deps:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -18,11 +17,28 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
-          node-version: 24
-          cache: pnpm
+          node-version: 24.x
+
+      - name: Restore pnpm store cache
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.pnpm-store
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Save pnpm store cache
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.pnpm-store
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
   format:
     runs-on: ubuntu-latest
@@ -33,13 +49,22 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v5
+      - name: Setup Node
+        uses: actions/setup-node@v5
         with:
-          node-version: 24
-          cache: pnpm
+          node-version: 24.x
+
+      - name: Restore pnpm store cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.pnpm-store
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Check formatting
         run: pnpm format:check
@@ -53,13 +78,22 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v5
+      - name: Setup Node
+        uses: actions/setup-node@v5
         with:
-          node-version: 24
-          cache: pnpm
+          node-version: 24.x
+
+      - name: Restore pnpm store cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.pnpm-store
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Lint
         run: pnpm lint
@@ -73,13 +107,22 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v5
+      - name: Setup Node
+        uses: actions/setup-node@v5
         with:
-          node-version: 24
-          cache: pnpm
+          node-version: 24.x
+
+      - name: Restore pnpm store cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.pnpm-store
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Type check
         run: pnpm type-check
